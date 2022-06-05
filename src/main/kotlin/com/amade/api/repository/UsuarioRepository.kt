@@ -1,3 +1,5 @@
+@file:Suppress("SpringDataRepositoryMethodReturnTypeInspection")
+
 package com.amade.api.repository
 
 import com.amade.api.model.Usuario
@@ -13,5 +15,7 @@ interface UsuarioRepository : CoroutineCrudRepository<Usuario, String> {
     @Query("insert into usuario values($1,$2,$3,$4,$5)")
     suspend fun insert(uid: String, name: String, senha: String, email: String, role: String): Int
 
+    @Query("select * from usuario where email=:email")
+    suspend fun findUsuarioByEmail(email: String): Usuario
 
 }

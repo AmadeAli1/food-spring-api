@@ -13,11 +13,11 @@ import javax.validation.constraints.NotNull
 
 @Table("usuario")
 data class Usuario(
-    @field:Id @field:Column("uid") val uid: String,
+    @field:Id @field:Column("uid") val uid: String = UUID.randomUUID().toString(),
     @field:Max(value = 40) @field:NotNull @field:Column("username") val name: String,
     @field:NotNull @field:Column("password") val senha: String,
     @field:Email @field:NotBlank @field:Column("email") val email: String,
-    @field:NotNull @field:Column("role") val role: UsuarioRole = UsuarioRole.ROLE_USER,
+    @field:NotNull @field:Column("role") val role: UsuarioRole = UsuarioRole.USER,
 ) : UserDetails {
 
     override fun getAuthorities(): List<SimpleGrantedAuthority> {
