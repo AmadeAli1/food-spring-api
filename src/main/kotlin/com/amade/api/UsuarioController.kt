@@ -5,6 +5,7 @@ import com.amade.api.service.UsuarioService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import javax.validation.Valid
 
 @RestController
 @RequestMapping("/api")
@@ -16,15 +17,19 @@ class UsuarioController(private val usuarioService: UsuarioService) {
         @RequestParam("senha", required = true) senha: String,
     ): ResponseEntity<Any> {
         val usuario = usuarioService.loginByEmail(email, senha)
-            ?: return ResponseEntity("Dados Invalidos", HttpStatus.BAD_REQUEST)
-        return ResponseEntity(usuario, HttpStatus.OK)
+        if (usuario != null) {
+            return ResponseEntity(usuario, HttpStatus.OK)
+        }
+        return ResponseEntity("Verifique seu Email e Senha", HttpStatus.BAD_REQUEST)
     }
 
     @PostMapping("/register")
-    suspend fun register(@RequestBody usuario: Usuario): ResponseEntity<Any> {
+    suspend fun register(@Valid @RequestBody usuario: Usuario): ResponseEntity<Any> {
         val register = usuarioService.register(usuario)
-            ?: return ResponseEntity("Dados invalidos.", HttpStatus.BAD_REQUEST)
-        return ResponseEntity(register, HttpStatus.CREATED)
+        if (register != null) {
+            return ResponseEntity(register, HttpStatus.CREATED)
+        }
+        return ResponseEntity("Dados invalidos.", HttpStatus.BAD_REQUEST)
     }
 
 }
