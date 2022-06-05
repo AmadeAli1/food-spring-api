@@ -30,7 +30,7 @@ data class Usuario(
     }
 
     override fun getUsername(): String {
-        return uid
+        return email
     }
 
     override fun isAccountNonExpired(): Boolean {

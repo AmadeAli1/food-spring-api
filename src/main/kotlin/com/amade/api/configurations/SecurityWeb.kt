@@ -1,34 +1,45 @@
 package com.amade.api.configurations
 
+import com.amade.api.service.UsuarioService
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.http.HttpMethod
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity
 import org.springframework.security.config.web.server.ServerHttpSecurity
-import org.springframework.security.core.userdetails.MapReactiveUserDetailsService
-import org.springframework.security.core.userdetails.User
-import org.springframework.security.crypto.password.PasswordEncoder
+import org.springframework.security.core.userdetails.ReactiveUserDetailsService
 import org.springframework.security.web.server.SecurityWebFilterChain
 
 
 @Configuration
 @EnableWebFluxSecurity
-class SecurityWeb {
+class SecurityWeb(
+    private val service: UsuarioService,
+) {
 
     @Bean
-    fun userDetailsService(passwordEncoder: PasswordEncoder): MapReactiveUserDetailsService? {
-        val user = User
-            .withUsername("amade")
-            .password(passwordEncoder.encode("amade-2022"))
-            .roles("USER")
-            .build()
-        return MapReactiveUserDetailsService(user)
+    fun springSecurityFilterChain(http: ServerHttpSecurity): SecurityWebFilterChain? {
+        http
+            .authorizeExchange()
+            .pathMatchers(HttpMethod.GET, "/api/**").permitAll()
+            .pathMatchers(HttpMethod.DELETE, "/api/**").hasAuthority("USER")
+            .pathMatchers(HttpMethod.POST, "/api/register").permitAll()
+            .pathMatchers(HttpMethod.POST, "/api/**").hasAuthority("ADMIN")
+            .anyExchange()
+            .authenticated()
+            .and()
+            .httpBasic()
+            .and()
+            .csrf().disable()
+            .formLogin()
+        return http.build()
     }
 
     @Bean
-    fun securityWebFilterChain(http: ServerHttpSecurity): SecurityWebFilterChain? {
-        return http.authorizeExchange()
-            .anyExchange().authenticated()
-            .and().build()
+    fun userDetailsService(): ReactiveUserDetailsService? {
+        return ReactiveUserDetailsService { username: String? ->
+            service.findByUsername(username!!)
+        }
     }
+
 
 }

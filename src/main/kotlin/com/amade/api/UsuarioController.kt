@@ -7,9 +7,8 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping("/usuario")
+@RequestMapping("/api")
 class UsuarioController(private val usuarioService: UsuarioService) {
-
 
     @GetMapping("/login")
     suspend fun login(

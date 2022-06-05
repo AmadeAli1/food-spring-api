@@ -1,9 +1,12 @@
 package com.amade.api.service
 
+import com.amade.api.dto.UsuarioDTO
 import com.amade.api.model.Usuario
 import com.amade.api.repository.UsuarioRepository
+import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
+import reactor.core.publisher.Mono
 
 @Service
 class UsuarioService(
@@ -11,9 +14,9 @@ class UsuarioService(
     private val passwordEncoder: PasswordEncoder,
 ) {
 
-    suspend fun register(usuario: Usuario): Usuario? {
+    suspend fun register(usuario: Usuario): UsuarioDTO? {
         val senha = encode(usuario.senha)
-        var status = 0
+        val status: Int
         try {
             status = usuarioRepository.insert(
                 usuario.uid, usuario.name, senha, usuario.email, usuario.role.name
@@ -23,17 +26,17 @@ class UsuarioService(
             return null
         }
         return if (status == 1) {
-            findById(usuario.uid)!!
+            val us = findById(usuario.uid)!!
+            UsuarioDTO(uid = us.uid, email = us.email, username = us.name)
         } else {
             null
         }
     }
 
-    suspend fun loginByEmail(email: String, senha: String): Usuario? {
-        val usuario = usuarioRepository.findUsuarioByEmail(email = email)
-
-        if (decode(usuario.senha, senha)) {
-            return usuario
+    suspend fun loginByEmail(email: String, senha: String): UsuarioDTO? {
+        val us = usuarioRepository.findUsuarioByEmail(email = email)
+        if (decode(us.senha, senha)) {
+            return UsuarioDTO(uid = us.uid, email = us.email, username = us.name)
         }
         return null
     }
@@ -49,5 +52,10 @@ class UsuarioService(
     private suspend fun findById(uid: String): Usuario? {
         return usuarioRepository.findById(uid)
     }
+
+    fun findByUsername(username: String?): Mono<UserDetails> {
+        return usuarioRepository.getByEmail(username!!)
+    }
+
 
 }
