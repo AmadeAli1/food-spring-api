@@ -21,6 +21,7 @@ class UsuarioController(private val usuarioService: UsuarioService) {
             return ResponseEntity(usuario, HttpStatus.OK)
         }
         return ResponseEntity("Verifique seu Email e Senha", HttpStatus.BAD_REQUEST)
+
     }
 
     @PostMapping("/register")

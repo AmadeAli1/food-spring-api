@@ -35,9 +35,11 @@ class UsuarioService(
 
     suspend fun loginByEmail(email: String, senha: String): UsuarioDTO? {
         val us = usuarioRepository.findUsuarioByEmail(email = email)
+
         if (decode(us.senha, senha)) {
             return UsuarioDTO(uid = us.uid, email = us.email, username = us.name)
         }
+
         return null
     }
 
