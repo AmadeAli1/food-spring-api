@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/api")
 class UsuarioController(private val usuarioService: UsuarioService) {
 
-    @GetMapping("/login")
+    @GetMapping("/signin")
     suspend fun login(
         @RequestParam("email", required = true) email: String,
         @RequestParam("senha", required = true) senha: String,
