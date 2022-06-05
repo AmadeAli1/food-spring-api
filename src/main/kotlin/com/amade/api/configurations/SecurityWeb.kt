@@ -30,7 +30,7 @@ class SecurityWeb(
             .httpBasic()
             .and()
             .csrf().disable()
-            .formLogin()
+            .formLogin().disable()
         return http.build()
     }
 
