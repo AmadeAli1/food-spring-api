@@ -14,8 +14,8 @@ import javax.validation.constraints.Size
 @Table("usuario")
 data class Usuario(
     @field:Id @field:Column("uid") val uid: String = UUID.randomUUID().toString(),
-    @field:Size(max = 40, min = 2) @field:NotNull @field:Column("username") val name: String,
-    @field:NotNull @field:Size(min = 6, max = 60) @field:Column("password") val senha: String,
+    @field:Size(max = 40, min = 2) @field:NotNull @NotBlank @field:Column("username") val name: String,
+    @field:NotNull @field:Size(min = 6, max = 60) @NotBlank @field:Column("password") val senha: String,
     @field:Email @field:NotBlank @field:Column("email") val email: String,
     @field:NotNull @field:Column("role") val role: UsuarioRole = UsuarioRole.USER,
 ) : UserDetails {
