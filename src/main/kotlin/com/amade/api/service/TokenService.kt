@@ -37,7 +37,7 @@ class TokenService(
 
     suspend fun confirmAccount(id: String): String? {
         val token = findTokenById(tokenId = id)!!
-        var status = 0
+        val status: Int
 
         if (token.confirmedAt != null) {
             throw ApiRequestException("Token is verified")
@@ -52,8 +52,11 @@ class TokenService(
         if (token.expiredAt.isAfter(now) || token.expiredAt.isEqual(now)) {
             status = tokenRepository.confirmToken(now, usuario_id = token.usuarioId)
             if (status == 1) {
-                tokenRepository.enableAccount(token.usuarioId)
-                return "Confirmacao da conta com sucesso"
+                val enableAccount = tokenRepository.enableAccount(token.usuarioId)
+                if (enableAccount == 1) {
+                    return "Confirmacao da conta com sucesso"
+                }
+                throw ApiRequestException("Erro ao habilitar a conta")
             }
         }
         return null

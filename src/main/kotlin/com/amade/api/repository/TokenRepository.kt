@@ -20,7 +20,6 @@ interface TokenRepository : CoroutineCrudRepository<Token, String> {
         confirmedAt: LocalDateTime?,
     ): Int
 
-
     @Query("select * from token where usuario_id=:usuarioId")
     suspend fun findUserToken(usuario_id: String): Token?
 
@@ -29,6 +28,6 @@ interface TokenRepository : CoroutineCrudRepository<Token, String> {
     suspend fun confirmToken(confirmedAt: LocalDateTime, usuario_id: String): Int
 
     @Modifying
-    @Query("update usuario set enable=:true where uid=:usuarioId")
-    suspend fun enableAccount(usuarioId: String): Int
+    @Query("update usuario set enable=:value where uid=:usuarioId")
+    suspend fun enableAccount(usuarioId: String, value: Boolean): Int
 }
