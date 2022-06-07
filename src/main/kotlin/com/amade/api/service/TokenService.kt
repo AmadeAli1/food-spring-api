@@ -39,20 +39,23 @@ class TokenService(
     suspend fun confirmAccount(id: String): String? {
         val token = findTokenById(tokenId = id)!!
         var status = 0
+
         if (token.confirmedAt != null) {
             throw RuntimeException("Token is verified")
         }
 
         val now = LocalDateTime.now()
+
         if (token.expiredAt.isBefore(now)) {
+
             throw RuntimeException("Token Expirado")
         }
 
         if (token.expiredAt.isAfter(now) || token.expiredAt.isEqual(now)) {
             status = tokenRepository.confirmToken(now, usuario_id = token.usuarioId)
-        }
-        if (status == 1) {
-            return "Confirmacao da conta com sucesso"
+            if (status == 1) {
+                return "Confirmacao da conta com sucesso"
+            }
         }
         return null
     }

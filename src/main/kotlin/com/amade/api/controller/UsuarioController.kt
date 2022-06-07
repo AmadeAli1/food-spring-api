@@ -39,12 +39,14 @@ class UsuarioController(
         return ResponseEntity("Dados invalidos.", HttpStatus.BAD_REQUEST)
     }
 
-    @PostMapping("/confirmAccount")
+    @GetMapping("/confirmAccount")
     suspend fun confirmAccount(@RequestParam("token", required = true) token: String): ResponseEntity<Any> {
         return withContext(Dispatchers.IO) {
             val confirmAccount = tokenService.confirmAccount(id = token)
-                ?: return@withContext ResponseEntity("Erro Ao Confirmar o Token::", HttpStatus.INTERNAL_SERVER_ERROR)
-            ResponseEntity(confirmAccount, HttpStatus.OK)
+            if (confirmAccount != null) {
+                return@withContext ResponseEntity(confirmAccount, HttpStatus.OK)
+            }
+            ResponseEntity("Erro Ao Confirmar o Token::", HttpStatus.INTERNAL_SERVER_ERROR)
         }
     }
 

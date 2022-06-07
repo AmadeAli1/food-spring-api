@@ -3,7 +3,7 @@ package com.amade.api.service
 import com.amade.api.dto.UsuarioDTO
 import com.amade.api.model.Usuario
 import com.amade.api.repository.UsuarioRepository
-import com.amade.api.utils.Constantes.confirmTokenUrl
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
@@ -16,6 +16,8 @@ class UsuarioService(
     private val emailService: EmailService,
     private val tokenService: TokenService,
 ) {
+    @Value(value = "\${source.food.api.token}")
+    val confirmTokenUrl: String? = null
 
     suspend fun register(usuario: Usuario): UsuarioDTO? {
         val senha = encode(usuario.senha)
