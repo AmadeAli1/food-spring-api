@@ -1,7 +1,10 @@
-package com.amade.api
+package com.amade.api.controller
 
 import com.amade.api.model.Usuario
+import com.amade.api.service.TokenService
 import com.amade.api.service.UsuarioService
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -9,7 +12,10 @@ import javax.validation.Valid
 
 @RestController
 @RequestMapping("/api")
-class UsuarioController(private val usuarioService: UsuarioService) {
+class UsuarioController(
+    private val usuarioService: UsuarioService,
+    private val tokenService: TokenService,
+) {
 
     @GetMapping("/login")
     suspend fun login(
@@ -31,6 +37,15 @@ class UsuarioController(private val usuarioService: UsuarioService) {
             return ResponseEntity(register, HttpStatus.CREATED)
         }
         return ResponseEntity("Dados invalidos.", HttpStatus.BAD_REQUEST)
+    }
+
+    @PostMapping("/confirmAccount")
+    suspend fun confirmAccount(@RequestParam("token", required = true) token: String): ResponseEntity<Any> {
+        return withContext(Dispatchers.IO) {
+            val confirmAccount = tokenService.confirmAccount(id = token)
+                ?: return@withContext ResponseEntity("Erro Ao Confirmar o Token::", HttpStatus.INTERNAL_SERVER_ERROR)
+            ResponseEntity(confirmAccount, HttpStatus.OK)
+        }
     }
 
 }

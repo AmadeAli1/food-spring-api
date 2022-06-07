@@ -1,27 +1,19 @@
 package com.amade.api
 
-import com.amade.api.model.Usuario
-import com.amade.api.service.UsuarioService
+import com.amade.api.service.TokenService
 import kotlinx.coroutines.runBlocking
 import org.springframework.boot.CommandLineRunner
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
-import java.util.*
 
 @SpringBootApplication
-class FoodApiApplication(val service: UsuarioService) : CommandLineRunner {
-
+class FoodApiApplication : CommandLineRunner {
     override fun run(vararg args: String?) {
-
         runBlocking {
-//            val user = Usuario(
-//                uid = UUID.randomUUID().toString(),
-//                name = "Amade Ali",
-//                senha = "amade",
-//                email = "amadeali@gmail.com"
-//            )
-//            val usuario = service.register(user)
-//            println(usuario)
+//
+//            val token = "4674fd26-c711-4e0f-a215-4f01c5263f45"
+//            val createToken = service.createToken(token)
+//            println(createToken)
         }
 
     }
