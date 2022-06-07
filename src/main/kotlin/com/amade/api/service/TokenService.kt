@@ -52,7 +52,7 @@ class TokenService(
         if (token.expiredAt.isAfter(now) || token.expiredAt.isEqual(now)) {
             status = tokenRepository.confirmToken(now, usuario_id = token.usuarioId)
             if (status == 1) {
-                val enableAccount = tokenRepository.enableAccount(token.usuarioId)
+                val enableAccount = tokenRepository.enableAccount(token.usuarioId,true)
                 if (enableAccount == 1) {
                     return "Confirmacao da conta com sucesso"
                 }
