@@ -18,6 +18,7 @@ data class Usuario(
     @field:NotNull @field:Size(min = 6, max = 60) @NotBlank @field:Column("password") val senha: String,
     @field:Email @field:NotBlank @field:Column("email") val email: String,
     @field:NotNull @field:Column("role") val role: UsuarioRole = UsuarioRole.USER,
+    @field:NotNull @field:Column("enable") var enable: Boolean = false,
 ) : UserDetails {
 
     override fun getAuthorities(): List<SimpleGrantedAuthority> {
@@ -46,7 +47,7 @@ data class Usuario(
     }
 
     override fun isEnabled(): Boolean {
-        return true
+        return enable
     }
 
 }

@@ -43,7 +43,7 @@ class UsuarioService(
                 Token Valido para 15 minutos
             """.trimIndent()
             )
-            UsuarioDTO(uid = us.uid, email = us.email, username = us.name)
+            UsuarioDTO(uid = us.uid, email = us.email, username = us.name, isEnable = us.enable)
         } else {
             null
         }
@@ -53,7 +53,7 @@ class UsuarioService(
         val us = usuarioRepository.findUsuarioByEmail(email = email)
 
         if (decode(us.senha, senha)) {
-            return UsuarioDTO(uid = us.uid, email = us.email, username = us.name)
+            return UsuarioDTO(uid = us.uid, email = us.email, username = us.name, isEnable = us.enable)
         }
 
         return null
@@ -74,6 +74,4 @@ class UsuarioService(
     fun findByUsername(username: String?): Mono<UserDetails> {
         return usuarioRepository.getByEmail(username!!)
     }
-
-
 }

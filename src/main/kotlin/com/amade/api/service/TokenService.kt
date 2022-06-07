@@ -9,7 +9,6 @@ import java.time.LocalDateTime
 class TokenService(
     private val tokenRepository: TokenRepository,
 ) {
-
     suspend fun createToken(usuarioId: String): String? {
         val userToken = Token(usuarioId = usuarioId)
         try {
@@ -54,6 +53,7 @@ class TokenService(
         if (token.expiredAt.isAfter(now) || token.expiredAt.isEqual(now)) {
             status = tokenRepository.confirmToken(now, usuario_id = token.usuarioId)
             if (status == 1) {
+                tokenRepository.enableAccount(token.usuarioId)
                 return "Confirmacao da conta com sucesso"
             }
         }

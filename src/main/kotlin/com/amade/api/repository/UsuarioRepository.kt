@@ -24,4 +24,5 @@ interface UsuarioRepository : CoroutineCrudRepository<Usuario, String> {
     @Query("select * from usuario where email=:email")
     fun getByEmail(email: String): Mono<UserDetails>
 
+
 }
