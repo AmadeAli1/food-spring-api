@@ -1,13 +1,16 @@
 package com.amade.api.service
 
+import com.amade.api.exception.ApiRequestException
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.mail.MailSendException
 import org.springframework.mail.SimpleMailMessage
 import org.springframework.mail.javamail.JavaMailSender
+import org.springframework.mail.javamail.JavaMailSenderImpl
 import org.springframework.stereotype.Service
 
 @Service
-class EmailService(val javaMailSender: JavaMailSender) {
+class EmailService(private val javaMailSender: JavaMailSender) {
+
     @Value(value = "\${source.email.sender}")
     private val myEmail: String? = null
 
@@ -20,9 +23,9 @@ class EmailService(val javaMailSender: JavaMailSender) {
             sampleEmail.setText(body!!)
             javaMailSender.send(sampleEmail)
         } catch (e: MailSendException) {
-            println(e.failedMessages)
+            throw ApiRequestException(e.message!!)
         } catch (e: Exception) {
-            e.printStackTrace()
+            throw ApiRequestException(e.message!!)
         }
     }
 

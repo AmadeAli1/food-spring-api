@@ -1,5 +1,6 @@
 package com.amade.api.service
 
+import com.amade.api.exception.ApiRequestException
 import com.amade.api.model.Token
 import com.amade.api.repository.TokenRepository
 import org.springframework.stereotype.Service
@@ -22,8 +23,7 @@ class TokenService(
             }
             return null
         } catch (e: Exception) {
-            e.printStackTrace()
-            return null
+            throw ApiRequestException(e.message!!)
         }
     }
 
@@ -40,14 +40,13 @@ class TokenService(
         var status = 0
 
         if (token.confirmedAt != null) {
-            throw RuntimeException("Token is verified")
+            throw ApiRequestException("Token is verified")
         }
 
         val now = LocalDateTime.now()
 
         if (token.expiredAt.isBefore(now)) {
-
-            throw RuntimeException("Token Expirado")
+            throw ApiRequestException("Token Expirado")
         }
 
         if (token.expiredAt.isAfter(now) || token.expiredAt.isEqual(now)) {

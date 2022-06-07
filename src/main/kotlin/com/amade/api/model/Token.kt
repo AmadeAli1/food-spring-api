@@ -12,6 +12,6 @@ data class Token(
     @field:Id @field:Column("id") val token: String = UUID.randomUUID().toString(),
     @field:Column("usuario_id") val usuarioId: String,
     @field:Column("createdat") val createdAt: LocalDateTime = LocalDateTime.now(),
-    @field:Column("expiredat") val expiredAt: LocalDateTime = createdAt.plus(15L, ChronoUnit.MINUTES),
+    @field:Column("expiredat") val expiredAt: LocalDateTime = createdAt.plus(40L, ChronoUnit.MINUTES),
     @field:Column("confirmedat") var confirmedAt: LocalDateTime? = null,
 )

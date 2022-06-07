@@ -46,7 +46,7 @@ class UsuarioController(
             if (confirmAccount != null) {
                 return@withContext ResponseEntity(confirmAccount, HttpStatus.OK)
             }
-            ResponseEntity("Erro Ao Confirmar o Token::", HttpStatus.INTERNAL_SERVER_ERROR)
+            ResponseEntity("Ocorreu um erro ao confirmar o Token", HttpStatus.INTERNAL_SERVER_ERROR)
         }
     }
 
