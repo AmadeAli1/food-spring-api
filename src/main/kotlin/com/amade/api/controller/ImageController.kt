@@ -3,6 +3,7 @@ package com.amade.api.controller
 import com.amade.api.service.ImageService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.core.io.ByteArrayResource
 import org.springframework.core.io.Resource
 import org.springframework.http.HttpHeaders
@@ -17,6 +18,8 @@ import org.springframework.web.bind.annotation.*
 class ImageController(
     private val imageService: ImageService,
 ) {
+    @Value(value = "\${food.api.imageUrl}")
+    val confirmTokenUrl: String? = null
 
     @PostMapping(
         "/save",
@@ -32,7 +35,7 @@ class ImageController(
 
         val saved = imageService.save(file)
 
-        val url = "http://localhost:8080/api/image?id=${saved?.id}"
+        val url = confirmTokenUrl + "${saved?.id}"
 
         return ResponseEntity(url, HttpStatus.CREATED)
     }
