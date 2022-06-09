@@ -49,10 +49,10 @@ class TokenService(
             throw ApiRequestException("Token Expirado")
         }
 
-        if (token.expiredAt.isAfter(now) || token.expiredAt.isEqual(now)) {
+        if (token.expiredAt.isAfter(now).and(token.confirmedAt != null)) {
             status = tokenRepository.confirmToken(now, usuario_id = token.usuarioId)
             if (status == 1) {
-                val enableAccount = tokenRepository.enableAccount(token.usuarioId,true)
+                val enableAccount = tokenRepository.enableAccount(token.usuarioId)
                 if (enableAccount == 1) {
                     return "Confirmacao da conta com sucesso"
                 }
