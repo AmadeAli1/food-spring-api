@@ -3,8 +3,11 @@ package com.amade.api.service
 import com.amade.api.exception.ApiRequestException
 import com.amade.api.model.Token
 import com.amade.api.repository.TokenRepository
+import org.apache.commons.logging.Log
+import org.slf4j.event.LoggingEvent
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
+import java.util.logging.Logger
 
 @Service
 class TokenService(
@@ -50,7 +53,8 @@ class TokenService(
         }
 
         if (token.expiredAt.isAfter(now).and(token.confirmedAt != null)) {
-            status = tokenRepository.confirmToken(now, usuario_id = token.usuarioId)
+            status = tokenRepository.confirmToken(usuario_id = token.usuarioId)
+
             if (status == 1) {
                 val enableAccount = tokenRepository.enableAccount(token.usuarioId)
                 if (enableAccount == 1) {
@@ -59,6 +63,6 @@ class TokenService(
                 throw ApiRequestException("Erro ao habilitar a conta")
             }
         }
-        return null
+        throw ApiRequestException("Nao foi possivel verificar o token!")
     }
 }

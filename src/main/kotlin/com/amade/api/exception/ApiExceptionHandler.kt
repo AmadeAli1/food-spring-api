@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 class ApiExceptionHandler {
 
     @ExceptionHandler(value = [ApiRequestException::class])
-    fun handlerException(exception: ApiRequestException): ResponseEntity<Any> {
+    suspend fun handlerException(exception: ApiRequestException): ResponseEntity<ApiRequestException.ApiExceptionBody> {
         val apiException = ApiRequestException.ApiExceptionBody(
             message = exception.message!!,
             cause = exception.cause!!,

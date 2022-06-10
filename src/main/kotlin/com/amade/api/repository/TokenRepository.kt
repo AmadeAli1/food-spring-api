@@ -24,8 +24,8 @@ interface TokenRepository : CoroutineCrudRepository<Token, String> {
     suspend fun findUserToken(usuario_id: String): Token?
 
     @Modifying
-    @Query("update token set confirmedat=:confirmedAt where usuario_id=:usuario_id")
-    suspend fun confirmToken(confirmedAt: LocalDateTime, usuario_id: String): Int
+    @Query("update token set confirmedat=now() where usuario_id=:usuario_id")
+    suspend fun confirmToken(usuario_id: String): Int
 
     @Modifying
     @Query("update usuario set enable=true where uid=:usuarioId")
