@@ -1,9 +1,9 @@
 package com.amade.api.controller
 
+import com.amade.api.configurations.UrlConfiguration.Companion.imageUrl
 import com.amade.api.service.ImageService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.core.io.ByteArrayResource
 import org.springframework.core.io.Resource
 import org.springframework.http.HttpHeaders
@@ -18,8 +18,6 @@ import org.springframework.web.bind.annotation.*
 class ImageController(
     private val imageService: ImageService,
 ) {
-    @Value(value = "\${food.api.imageUrl}")
-    val confirmTokenUrl: String? = null
 
     @PostMapping(
         "/save",
@@ -30,28 +28,23 @@ class ImageController(
         ]
     )
     suspend fun save(@RequestPart("file") file: FilePart): ResponseEntity<String>? {
-
-        println(file)
-
         val saved = imageService.save(file)
-
-        val url = confirmTokenUrl + "${saved?.id}"
-
+        val url = imageUrl + "${saved?.id}"
         return ResponseEntity(url, HttpStatus.CREATED)
     }
 
-    @GetMapping
-    suspend fun getImage(@RequestParam("id") id: Int)
-            : ResponseEntity<Resource> {
+    @GetMapping("/download")
+    suspend fun getImage(@RequestParam("id") id: Int): ResponseEntity<Resource> {
         return withContext(Dispatchers.IO) {
             val img = imageService.findByid(id)
-
             ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(img!!.type))
-                .header(HttpHeaders.CONTENT_DISPOSITION)
+                .header(HttpHeaders.CONTENT_TYPE)
                 .body(ByteArrayResource(img.image))
         }
-
     }
+
+    @GetMapping("/all")
+    suspend fun findAllImagesUrl() = imageService.findAllImages()
 
 }

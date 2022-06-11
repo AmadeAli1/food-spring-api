@@ -1,19 +1,18 @@
 package com.amade.api.service
 
-import com.amade.api.exception.ApiRequestException
+import com.amade.api.exception.ApiException
 import com.amade.api.model.Token
 import com.amade.api.repository.TokenRepository
-import org.apache.commons.logging.Log
-import org.slf4j.event.LoggingEvent
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
-import java.util.logging.Logger
 
 @Service
 class TokenService(
     private val tokenRepository: TokenRepository,
 ) {
-    suspend fun createToken(usuarioId: String): String? {
+    suspend fun createToken(usuarioId: String): String? = withContext(Dispatchers.IO) {
         val userToken = Token(usuarioId = usuarioId)
         try {
             val status = tokenRepository.insert(
@@ -22,16 +21,12 @@ class TokenService(
                 createdAt = userToken.createdAt, expiredAt = userToken.expiredAt, confirmedAt = userToken.confirmedAt
             )
             if (status == 1) {
-                return userToken.token
+                return@withContext userToken.token
             }
-            return null
+            return@withContext null
         } catch (e: Exception) {
-            throw ApiRequestException(e.message!!)
+            throw ApiException("Ocorreu um erro ao Criar o token! cause{${e.message}}")
         }
-    }
-
-    private suspend fun findToken(usuarioId: String): Token? {
-        return tokenRepository.findUserToken(usuarioId)
     }
 
     private suspend fun findTokenById(tokenId: String): Token? {
@@ -43,26 +38,27 @@ class TokenService(
         val status: Int
 
         if (token.confirmedAt != null) {
-            throw ApiRequestException("Token is verified")
+            throw ApiException("O Token ja foi confirmado!")
         }
 
         val now = LocalDateTime.now()
-
         if (token.expiredAt.isBefore(now)) {
-            throw ApiRequestException("Token Expirado")
+            throw ApiException("O Token expirou!")
         }
-
-        if (token.expiredAt.isAfter(now).and(token.confirmedAt != null)) {
+        if (token.expiredAt.isAfter(now)) {
             status = tokenRepository.confirmToken(usuario_id = token.usuarioId)
 
             if (status == 1) {
-                val enableAccount = tokenRepository.enableAccount(token.usuarioId)
-                if (enableAccount == 1) {
-                    return "Confirmacao da conta com sucesso"
+                try {
+                    val enableAccount = tokenRepository.enableAccount(token.usuarioId)
+                    if (enableAccount == 1) {
+                        return "Confirmacao da conta com sucesso!"
+                    }
+                } catch (e: Exception) {
+                    throw ApiException("Ocorreu um erro ao habilitar a conta! cause{${e.message}}")
                 }
-                throw ApiRequestException("Erro ao habilitar a conta")
             }
         }
-        throw ApiRequestException("Nao foi possivel verificar o token!")
+        throw ApiException("Nao foi possivel verificar o token!")
     }
 }

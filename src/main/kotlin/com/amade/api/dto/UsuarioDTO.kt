@@ -5,4 +5,5 @@ data class UsuarioDTO(
     val email: String,
     val username: String,
     val isEnable: Boolean,
+    val imageUrl: String?,
 )

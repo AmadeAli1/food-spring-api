@@ -1,22 +1,27 @@
 package com.amade.api.controller
 
+import com.amade.api.configurations.UrlConfiguration.Companion.imageUrl
+import com.amade.api.dto.UsuarioDTO
 import com.amade.api.model.Usuario
+import com.amade.api.service.ImageService
 import com.amade.api.service.TokenService
 import com.amade.api.service.UsuarioService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
+import org.springframework.http.codec.multipart.FilePart
 import org.springframework.web.bind.annotation.*
 import javax.validation.Valid
 
 @RestController
-@RequestMapping("/api")
-class UsuarioController(
+@RequestMapping("/api/user")
+class UsuarioController private constructor(
     private val usuarioService: UsuarioService,
     private val tokenService: TokenService,
+    private val imageService: ImageService,
 ) {
-
     @GetMapping("/login")
     suspend fun login(
         @RequestParam("email", required = true) email: String,
@@ -26,7 +31,7 @@ class UsuarioController(
         if (usuario != null) {
             return ResponseEntity(usuario, HttpStatus.OK)
         }
-        return ResponseEntity("Verifique seu Email e Senha", HttpStatus.BAD_REQUEST)
+        return ResponseEntity("Verifique o dados introduzidos", HttpStatus.BAD_REQUEST)
 
     }
 
@@ -36,19 +41,50 @@ class UsuarioController(
         if (register != null) {
             return ResponseEntity(register, HttpStatus.CREATED)
         }
-        return ResponseEntity("Dados invalidos.", HttpStatus.BAD_REQUEST)
+        return ResponseEntity("Dados invalidos para o cadastro da conta!", HttpStatus.BAD_REQUEST)
     }
 
-    @GetMapping("/confirmAccount")
+    @GetMapping("/confirm")
     suspend fun confirmAccount(@RequestParam("token", required = true) token: String): ResponseEntity<Any> {
         return withContext(Dispatchers.IO) {
             val confirmAccount = tokenService.confirmAccount(id = token)
             if (confirmAccount != null) {
                 return@withContext ResponseEntity(confirmAccount, HttpStatus.OK)
             }
-            return@withContext ResponseEntity("Ocorreu um erro ao confirmar o Token",
-                HttpStatus.NOT_ACCEPTABLE)
+            return@withContext ResponseEntity(
+                "Ocorreu um erro ao confirmar o Token",
+                HttpStatus.NOT_ACCEPTABLE
+            )
         }
     }
+
+    @PostMapping(
+        "/profile",
+        consumes = [
+            MediaType.MULTIPART_FORM_DATA_VALUE,
+            MediaType.IMAGE_PNG_VALUE,
+            MediaType.IMAGE_JPEG_VALUE
+        ]
+    )
+    suspend fun saveProfileImage(
+        @RequestPart("file") file: FilePart,
+        @RequestParam("userId", required = true) id: String,
+    ): ResponseEntity<UsuarioDTO>? = withContext(Dispatchers.IO) {
+        val saved = imageService.save(file)
+        val url = imageUrl + "${saved?.id}"
+        val user = usuarioService.addProfilePicture(usuarioId = id, url)
+        ResponseEntity(user, HttpStatus.CREATED)
+    }
+
+    @DeleteMapping(
+        "/profile"
+    )
+    suspend fun removeProfileImage(@RequestParam("userId", required = true) id: String): ResponseEntity<UsuarioDTO?> {
+        val user = usuarioService.deleteProfilePicture(usuarioId = id)
+        return ResponseEntity(user, HttpStatus.OK)
+    }
+
+    @GetMapping("/all")
+    suspend fun findAll() = usuarioService.findAllUsers()
 
 }

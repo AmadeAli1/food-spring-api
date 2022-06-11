@@ -17,6 +17,7 @@ data class Usuario(
     @field:Size(max = 40, min = 2) @field:NotNull @NotBlank @field:Column("username") val name: String,
     @field:NotNull @field:Size(min = 6, max = 60) @NotBlank @field:Column("password") val senha: String,
     @field:Email @field:NotBlank @field:Column("email") val email: String,
+    @field:Column("imageurl") val imageUrl: String? = null,
     @field:NotNull @field:Column("role") val role: UsuarioRole = UsuarioRole.USER,
     @field:NotNull @field:Column("enable") var enable: Boolean = false,
 ) : UserDetails {

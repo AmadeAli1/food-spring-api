@@ -18,11 +18,18 @@ interface UsuarioRepository : CoroutineCrudRepository<Usuario, String> {
     suspend fun insert(uid: String, name: String, senha: String, email: String, role: String): Int
 
     @Query("select * from usuario where email=:email")
-    suspend fun findUsuarioByEmail(email: String): Usuario
+    suspend fun findUsuarioByEmail(email: String): Usuario?
 
 
     @Query("select * from usuario where email=:email")
     fun getByEmail(email: String): Mono<UserDetails>
 
+    @Modifying
+    @Query("update usuario set imageurl=:profileUrl where uid=:usuarioId")
+    suspend fun addProfilePicture(usuarioId: String, profileUrl: String?): Int
+
+
+    @Query("select exists(select * from usuario where email=:email)")
+    suspend fun existsByEmail(email: String): Boolean
 
 }
