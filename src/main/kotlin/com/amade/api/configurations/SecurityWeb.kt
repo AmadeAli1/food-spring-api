@@ -21,6 +21,7 @@ class SecurityWeb(
         http
             .authorizeExchange()
             .pathMatchers(HttpMethod.GET, "/api/**").permitAll()
+            .pathMatchers(HttpMethod.GET, "/api/user/**").permitAll()
             .pathMatchers(HttpMethod.POST, "/api/**").permitAll()
             .pathMatchers(HttpMethod.PUT, "/api/**").permitAll()
             .pathMatchers(HttpMethod.DELETE, "/api/**").permitAll()//.hasAuthority("USER")
