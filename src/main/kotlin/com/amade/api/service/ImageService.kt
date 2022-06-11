@@ -50,8 +50,10 @@ class ImageService(
     }
 
     suspend fun findAllImages() = withContext(Dispatchers.IO) {
-        imageRepository.findAll().map {
-            ImageDTO(imageUrl = imageUrl + "${it.id}")
+        withContext(Dispatchers.Default) {
+            imageRepository.findAll().map {
+                ImageDTO(imageUrl = imageUrl + "${it.id}")
+            }
         }
     }
 
