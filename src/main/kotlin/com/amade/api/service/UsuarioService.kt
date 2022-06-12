@@ -1,6 +1,7 @@
 package com.amade.api.service
 
 import com.amade.api.configurations.UrlConfiguration.Companion.confirmTokenUrl
+import com.amade.api.configurations.UrlConfiguration.Companion.imageUrl
 import com.amade.api.dto.UsuarioDTO
 import com.amade.api.exception.ApiException
 import com.amade.api.model.Usuario
@@ -101,8 +102,7 @@ class UsuarioService(
     suspend fun deleteProfilePicture(usuarioId: String): UsuarioDTO? = withContext(Dispatchers.IO) {
         val usuario = findById(uid = usuarioId)
         if (usuario?.imageUrl != null) {
-            val xs = "https://food-api-amade.herokuapp.com/api/image?id="
-            val ss = usuario.imageUrl.drop(xs.length)
+            val ss = usuario.imageUrl.drop(imageUrl!!.length)
             val statusUpdate = usuarioRepository.addProfilePicture(usuario.uid, null)
             val statusDelete = imageService.deleteById(id = ss.toInt())
 

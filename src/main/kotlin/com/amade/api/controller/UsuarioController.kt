@@ -70,9 +70,8 @@ class UsuarioController private constructor(
         @RequestPart("file") file: FilePart,
         @RequestParam("userId", required = true) id: String,
     ): ResponseEntity<UsuarioDTO>? = withContext(Dispatchers.IO) {
-        val saved = imageService.save(file)
-        val url = imageUrl + "${saved?.id}"
-        val user = usuarioService.addProfilePicture(usuarioId = id, url)
+        val linkDownload = imageService.save(file)
+        val user = usuarioService.addProfilePicture(usuarioId = id, linkDownload)
         ResponseEntity(user, HttpStatus.CREATED)
     }
 

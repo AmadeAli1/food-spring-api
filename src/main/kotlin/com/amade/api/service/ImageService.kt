@@ -22,7 +22,7 @@ class ImageService(
     @Value(value = "\${food.api.imageUrl}")
     val imageUrl: String? = null
 
-    suspend fun save(file: FilePart): Image? {
+    suspend fun save(file: FilePart): String? {
         return withContext(Dispatchers.IO) {
             val name = StringUtils.cleanPath(file.filename())
             try {
@@ -41,7 +41,7 @@ class ImageService(
                     type = type,
                     name = name + UUID.randomUUID().toString()
                 )
-                return@withContext imageRepository.save(image)
+                return@withContext imageUrl + "${imageRepository.save(image).id}"
             } catch (e: Exception) {
                 throw ApiException("Ocorreu um erro ao gravar a imagem! =>:{${e.message!!}}")
             }

@@ -1,6 +1,5 @@
 package com.amade.api.controller
 
-import com.amade.api.configurations.UrlConfiguration.Companion.imageUrl
 import com.amade.api.service.ImageService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -28,9 +27,8 @@ class ImageController(
         ]
     )
     suspend fun save(@RequestPart("file") file: FilePart): ResponseEntity<String>? {
-        val saved = imageService.save(file)
-        val url = imageUrl + "${saved?.id}"
-        return ResponseEntity(url, HttpStatus.CREATED)
+        val linkDownload = imageService.save(file)
+        return ResponseEntity(linkDownload, HttpStatus.CREATED)
     }
 
     @GetMapping("/download")
@@ -46,5 +44,6 @@ class ImageController(
 
     @GetMapping("/all")
     suspend fun findAllImagesUrl() = imageService.findAllImages()
+
 
 }
