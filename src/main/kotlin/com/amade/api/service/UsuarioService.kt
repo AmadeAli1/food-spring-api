@@ -1,6 +1,5 @@
 package com.amade.api.service
 
-import com.amade.api.configurations.UrlConfiguration.Companion.confirmTokenUrl
 import com.amade.api.configurations.UrlConfiguration.Companion.imageUrl
 import com.amade.api.dto.UsuarioDTO
 import com.amade.api.exception.ApiException
@@ -9,6 +8,7 @@ import com.amade.api.repository.UsuarioRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
@@ -22,6 +22,9 @@ class UsuarioService(
     private val emailService: EmailService,
     private val tokenService: TokenService,
 ) {
+    @Value(value = "\${source.food.api.token}")
+    val confirmTokenUrl: String? = null
+
     suspend fun register(usuario: Usuario): UsuarioDTO? = withContext(Dispatchers.IO) {
         val exists = usuarioRepository.existsByEmail(email = usuario.email)
         if (exists) {
