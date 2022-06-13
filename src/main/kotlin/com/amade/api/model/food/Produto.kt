@@ -18,11 +18,11 @@ data class Produto(
     @field:NotNull @field:Min(1) @Column("quantidade") var quantity: Int,
     @field:NotNull @Column("category_id") var category: Int,
     @Column("likes") var likes: Int = 0,
-    @Column("createdAt") var date: LocalDateTime? = LocalDateTime.now(),
+    @Column("createdAt") var date: String? = LocalDateTime.now().toString(),
 ) {
     @Id
     @Column("id")
     var id: Int = 0
 
-    constructor() : this("", 0.0f, 0, 0, 0, LocalDateTime.now())
+    constructor() : this("", 0.0f, 0, 0, 0, LocalDateTime.now().toString())
 }
