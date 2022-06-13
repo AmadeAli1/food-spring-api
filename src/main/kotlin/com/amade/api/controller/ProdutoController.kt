@@ -1,5 +1,6 @@
 package com.amade.api.controller
 
+import com.amade.api.dto.Page
 import com.amade.api.dto.ProdutoDTO
 import com.amade.api.exception.ValidationRequest
 import com.amade.api.model.food.Produto
@@ -23,11 +24,8 @@ class ProdutoController(
 ) {
 
     @PostMapping(
-        consumes = [
-            MediaType.MULTIPART_FORM_DATA_VALUE,
-            MediaType.IMAGE_JPEG_VALUE,
-            MediaType.IMAGE_PNG_VALUE,
-            MediaType.APPLICATION_JSON_VALUE,
+        consumes = [MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.IMAGE_JPEG_VALUE,
+            MediaType.IMAGE_PNG_VALUE, MediaType.APPLICATION_JSON_VALUE,
             MediaType.APPLICATION_OCTET_STREAM_VALUE
         ]
     )
@@ -46,9 +44,18 @@ class ProdutoController(
         ResponseEntity(produto, HttpStatus.CREATED)
     }
 
-    @GetMapping
+    @GetMapping("/all")
     suspend fun findAll(): Flow<ProdutoDTO> {
         return produtoService.findAll()
+    }
+
+
+    @GetMapping
+    suspend fun find(
+        @RequestParam("page", defaultValue = "0") page: Int,
+    ): ResponseEntity<Page<ProdutoDTO>> {
+        val body = produtoService.pagination(page = page)
+        return ResponseEntity(body, HttpStatus.OK)
     }
 
 }

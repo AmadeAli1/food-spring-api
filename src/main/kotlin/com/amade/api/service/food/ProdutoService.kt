@@ -1,5 +1,6 @@
 package com.amade.api.service.food
 
+import com.amade.api.dto.Page
 import com.amade.api.dto.ProdutoDTO
 import com.amade.api.exception.ApiException
 import com.amade.api.model.food.Produto
@@ -43,12 +44,43 @@ class ProdutoService(
     suspend fun findAll(): Flow<ProdutoDTO> {
         val xs = repository.findAll()
         return withContext(Dispatchers.IO) {
-            xs.map { produto ->
-                val ctg = categoriaService.findCategory(produto.category)
-                val img = repository.obter_todas_imagens(produto.id)
-                val images = img.map { it.image }.toList()
-                ProdutoDTO(produto = produto, categoria = ctg!!, images = images)
-            }
+            xs.map { p -> mapper(p) }
         }
+    }
+
+
+    private suspend fun mapper(produto: Produto): ProdutoDTO {
+        val ctg = categoriaService.findCategory(produto.category)
+        val img = repository.obter_todas_imagens(produto.id)
+        val images = img.map { it.image }.toList()
+        return ProdutoDTO(produto = produto, categoria = ctg!!, images = images)
+    }
+
+    suspend fun pagination(page: Int) = withContext(Dispatchers.IO) {
+        val limit: Double = 20.0
+        val count = repository.count()
+        val paginas = count.div(limit).plus(1).toInt()
+        val start = if (page == 0) {
+            0
+        } else {
+            page * limit.toInt()
+        }
+
+        val data = repository.findAll(start = start).map { p -> mapper(p) }.toList()
+
+        val next = if ((data.size == 20).and(count > start * 20)) {
+            "http://localhost:8080/api/food/produto?page=${page + 1}"
+        } else {
+            null
+        }
+        Page<ProdutoDTO>(
+            data = data,
+            pageSize = data.size,
+            pageNumber = page,
+            totalPages = paginas,
+            totalItems = count,
+            maxPageSize = 20,
+            next = next
+        )
     }
 }

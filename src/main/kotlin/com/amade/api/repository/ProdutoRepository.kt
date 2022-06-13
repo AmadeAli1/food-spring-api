@@ -15,6 +15,9 @@ interface ProdutoRepository : CoroutineCrudRepository<Produto, Int> {
     @Query("INSERT INTO produto_imagem (produto_id,imagem) values(:?1,:?2)")
     suspend fun inserir_imagem(itemId: Int, image: String): Int
 
+    @Query("select * from produto limit 20 offset :start")
+    suspend fun findAll(start: Int): Flow<Produto>
+
     @Query("SELECT * FROM produto_imagem where produto_id=$1")
     fun obter_todas_imagens(id: Int): Flow<ProdutoImagem>
 
