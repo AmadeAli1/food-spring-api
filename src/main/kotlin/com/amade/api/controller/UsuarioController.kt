@@ -1,6 +1,5 @@
 package com.amade.api.controller
 
-import com.amade.api.configurations.UrlConfiguration.Companion.imageUrl
 import com.amade.api.dto.UsuarioDTO
 import com.amade.api.model.Usuario
 import com.amade.api.service.ImageService
@@ -63,7 +62,10 @@ class UsuarioController private constructor(
         consumes = [
             MediaType.MULTIPART_FORM_DATA_VALUE,
             MediaType.IMAGE_PNG_VALUE,
-            MediaType.IMAGE_JPEG_VALUE
+            MediaType.IMAGE_JPEG_VALUE,
+            MediaType.APPLICATION_OCTET_STREAM_VALUE,
+            MediaType.APPLICATION_JSON_VALUE
+
         ]
     )
     suspend fun saveProfileImage(
