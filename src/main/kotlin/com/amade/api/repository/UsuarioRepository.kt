@@ -25,7 +25,7 @@ interface UsuarioRepository : CoroutineCrudRepository<Usuario, String> {
     fun getByEmail(email: String): Mono<UserDetails>
 
     @Modifying
-    @Query("update usuario set imageurl=:profileUrl where uid=:usuarioId")
+    @Query("update usuario set imageurl=:profileUrl  where uid=:usuarioId")
     suspend fun addProfilePicture(usuarioId: String, profileUrl: String?): Int
 
 
