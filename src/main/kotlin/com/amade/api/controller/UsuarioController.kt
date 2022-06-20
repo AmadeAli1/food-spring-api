@@ -12,6 +12,7 @@ import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.http.codec.multipart.FilePart
 import org.springframework.web.bind.annotation.*
+import reactor.core.publisher.Sinks
 import javax.validation.Valid
 
 @RestController
@@ -20,6 +21,7 @@ class UsuarioController private constructor(
     private val usuarioService: UsuarioService,
     private val tokenService: TokenService,
     private val imageService: ImageService,
+    private val sinks: Sinks.Many<UsuarioDTO>
 ) {
     @GetMapping("/login")
     suspend fun login(
@@ -28,8 +30,10 @@ class UsuarioController private constructor(
     ): ResponseEntity<Any> {
         val usuario = usuarioService.loginByEmail(email, senha)
         if (usuario != null) {
+            sinks.emitNext(usuario, Sinks.EmitFailureHandler.FAIL_FAST)
             return ResponseEntity(usuario, HttpStatus.OK)
         }
+
         return ResponseEntity("Verifique o dados introduzidos", HttpStatus.BAD_REQUEST)
 
     }

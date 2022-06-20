@@ -48,7 +48,6 @@ class ProdutoService(
         }
     }
 
-
     private suspend fun mapper(produto: Produto): ProdutoDTO {
         val ctg = categoriaService.findCategory(produto.category)
         val img = repository.obter_todas_imagens(produto.id)
@@ -83,4 +82,118 @@ class ProdutoService(
             next = next
         )
     }
+
+    suspend fun addToWishlist(userId: String, itemId: Int): Int {
+        val exist = existsWishlist(userId, itemId)
+        return if (!exist) {
+            try {
+                repository.adicionar_na_lista_de_desejos(itemId = itemId, userId = userId)
+            } catch (e: Exception) {
+                -1
+            }
+        } else {
+            0
+        }
+    }
+
+    suspend fun removeFromWishlist(userId: String, itemId: Int): Int {
+        val exist = existsWishlist(userId, itemId)
+        return if (exist) {
+            try {
+                repository.remover_da_lista_de_desejos(itemId = itemId, userId = userId)
+            } catch (e: Exception) {
+                -1
+            }
+        } else {
+            0
+        }
+    }
+
+    suspend fun findItemsInWishlist(userId: String): Flow<ProdutoDTO> {
+        return try {
+            val items = repository.obter_todos_items_da_lista_de_desejos_do_usuario(userId = userId)
+            items.map { mapper(it) }
+        } catch (e: Exception) {
+            throw ApiException(e.message!!)
+        }
+    }
+
+
+    suspend fun addToCart(userId: String, itemId: Int): Int {
+        val exist = existsCart(userId, itemId)
+        return if (!exist) {
+            try {
+                repository.adicionar_no_carrinho_de_compras(itemId = itemId, userId = userId)
+            } catch (e: Exception) {
+                -1
+            }
+        } else {
+            0
+        }
+    }
+
+    suspend fun removeFromCart(userId: String, itemId: Int): Int {
+        val exist = existsCart(userId, itemId)
+        return if (!exist) {
+            try {
+                repository.remover_do_carrinho_de_compras(itemId = itemId, userId = userId)
+            } catch (e: Exception) {
+                -1
+            }
+        } else {
+            0
+        }
+    }
+
+    suspend fun findItemsInCart(userId: String): Flow<ProdutoDTO> {
+        return try {
+            val items = repository.obter_todos_items_do_usuario(userId = userId)
+            items.map { mapper(it) }
+        } catch (e: Exception) {
+            throw RuntimeException(e.message)
+        }
+    }
+
+    suspend fun search(name: String): Flow<ProdutoDTO> {
+        return withContext(Dispatchers.IO) {
+            withContext(Dispatchers.Default) {
+                repository.pesquisar(query = name).map { mapper(it) }
+            }
+        }
+    }
+
+    suspend fun existsWishlist(userId: String, itemId: Int): Boolean {
+        return repository.verificar_existencia_do_produto_na_lista_de_desejos(userId, itemId)
+    }
+
+    suspend fun existsCart(userId: String, itemId: Int): Boolean {
+        return repository.verificar_existencia_do_produto_no_carrinho_de_compras(userId, itemId)
+    }
+
+    /**
+     * suspend fun addLike(userId: String, itemId: Int): Int {
+    return itemRepository.adicionar_like_ao_item(itemId).let {
+    if (it == 0) {
+    return@let 0
+    }
+    itemRepository.adicionar_like_do_usuario(userId, itemId)
+    }
+    }
+
+    suspend fun removeLike(userId: String, itemId: Int): Int {
+    return repository.remover_like_do_item(itemId).let {
+    if (it == 0) {
+    return@let 0
+    }
+    itemRepository.remover_like_do_usuario(userId, itemId)
+    }
+    }
+
+    suspend fun verificar_existencia_do_like(
+    userId: String, itemId: Int,
+    ): Boolean {
+    return repository.verificar_existencia_de_like_do_usuario(userId, itemId)
+    }
+     */
+
 }

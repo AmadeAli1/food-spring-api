@@ -2,6 +2,7 @@ package com.amade.api.controller
 
 import com.amade.api.dto.Page
 import com.amade.api.dto.ProdutoDTO
+import com.amade.api.exception.Message
 import com.amade.api.exception.ValidationRequest
 import com.amade.api.model.food.Produto
 import com.amade.api.service.food.ProdutoService
@@ -41,6 +42,7 @@ class ProdutoController(
         }
 
         val produto = produtoService.save(files = images.toStream().toList(), request = request)
+
         ResponseEntity(produto, HttpStatus.CREATED)
     }
 
@@ -56,6 +58,168 @@ class ProdutoController(
     ): ResponseEntity<Page<ProdutoDTO>> {
         val body = produtoService.pagination(page = page)
         return ResponseEntity(body, HttpStatus.OK)
+    }
+
+
+    @PostMapping("/wishlist")
+    suspend fun addToWishlist(
+        @RequestParam(name = "userId", required = true) userId: String,
+        @RequestParam(name = "itemId", required = true) itemId: Int,
+    ): ResponseEntity<Message> {
+        return withContext(Dispatchers.IO) {
+            val status = produtoService.addToWishlist(userId, itemId)
+
+            if (status == 0) {
+                return@withContext ResponseEntity(
+                    Message(
+                        message = "O Item ja existe na sua lista de desejos", status = HttpStatus
+                            .BAD_REQUEST.name
+                    ),
+                    HttpStatus
+                        .BAD_REQUEST
+                )
+            }
+            if (status == 1) {
+                return@withContext ResponseEntity(
+                    Message(
+                        message = "Item adicionado na lista de desejos",
+                        status = HttpStatus.CREATED.name
+                    ),
+                    HttpStatus
+                        .CREATED
+                )
+            }
+            ResponseEntity(
+                Message(
+                    message = "Erro ao adicionar o item na lista de desejos",
+                    status = HttpStatus.NOT_ACCEPTABLE.name
+                ),
+                HttpStatus
+                    .NOT_ACCEPTABLE
+            )
+        }
+    }
+
+    @DeleteMapping("/wishlist")
+    suspend fun removeFromWishlist(
+        @RequestParam(name = "userId", required = true) userId: String,
+        @RequestParam(name = "itemId", required = true) itemId: Int,
+    ): ResponseEntity<Message> {
+        return withContext(Dispatchers.IO) {
+            val status = produtoService.removeFromWishlist(userId, itemId)
+
+            if (status == 0) {
+                return@withContext ResponseEntity(
+                    Message(
+                        message = "Item nao encontrado na lista de desejos",
+                        HttpStatus.BAD_REQUEST.name
+                    ), HttpStatus.BAD_REQUEST
+                )
+            }
+            if (status == 1) {
+                return@withContext ResponseEntity(Message(message = "Item removido na lista de desejos"), HttpStatus.OK)
+            }
+
+            ResponseEntity(
+                Message(
+                    message = "Erro ao adicionar ao remover o item na lista de desejos",
+                    status = HttpStatus.NOT_FOUND.name
+                ),
+                HttpStatus
+                    .NOT_FOUND
+            )
+
+        }
+    }
+
+    @GetMapping("/wishlist")
+    suspend fun findItemsInWishlist(
+        @RequestParam(name = "userId", required = true) id: String,
+    ) = withContext(Dispatchers.IO) {
+        produtoService.findItemsInWishlist(userId = id)
+    }
+
+
+    @PostMapping("/cart")
+    suspend fun addToCart(
+        @RequestParam(name = "userId", required = true) userId: String,
+        @RequestParam(name = "itemId", required = true) itemId: Int,
+    ): ResponseEntity<Message> {
+        return withContext(Dispatchers.IO) {
+            val status = produtoService.addToCart(userId, itemId)
+
+            if (status == 0) {
+                return@withContext ResponseEntity(
+                    Message(message = "O Item ja existe no seu shopping cart", status = HttpStatus.BAD_REQUEST.name),
+                    HttpStatus.BAD_REQUEST
+                )
+            }
+
+            if (status == 1) {
+                return@withContext ResponseEntity(
+                    Message(message = "Item adicionado no shopping cart", status = HttpStatus.CREATED.name),
+                    HttpStatus.CREATED
+                )
+            }
+
+            ResponseEntity(
+                Message(
+                    message = "Erro ao adicionar ao adicionar o item no shopping cart",
+                    status = HttpStatus.NOT_FOUND.name
+                ),
+                HttpStatus
+                    .NOT_FOUND
+            )
+        }
+    }
+
+    @DeleteMapping("/cart")
+    suspend fun removeFromCart(
+        @RequestParam(name = "userId", required = true) userId: String,
+        @RequestParam(name = "itemId", required = true) itemId: Int,
+    ): ResponseEntity<Message> {
+        return withContext(Dispatchers.IO) {
+            val status = produtoService.removeFromCart(userId, itemId)
+
+            if (status == 0) {
+                return@withContext ResponseEntity(
+                    Message(
+                        message = "O Item nao existe",
+                        status = HttpStatus.NOT_FOUND.name
+                    ),
+                    HttpStatus.NOT_FOUND
+                )
+            }
+            if (status == 1) {
+                return@withContext ResponseEntity(Message(message = "Item removido do shopping cart"), HttpStatus.OK)
+            }
+
+            ResponseEntity(
+                Message(
+                    message = "Erro ao remover o item do shopping cart",
+                    status = HttpStatus.NOT_FOUND.name
+                ),
+                HttpStatus
+                    .NOT_FOUND
+            )
+
+        }
+    }
+
+    @GetMapping("/cart")
+    suspend fun findItemsInCart(
+        @RequestParam(name = "userId", required = true) id: String,
+    ): Flow<ProdutoDTO> {
+        return withContext(Dispatchers.IO) {
+            produtoService.findItemsInCart(userId = id)
+        }
+    }
+
+    @GetMapping("/search")
+    suspend fun findItemByName(
+        @RequestParam(name = "name", required = true) name: String,
+    ) = withContext(Dispatchers.IO) {
+        produtoService.search(name = name)
     }
 
 }

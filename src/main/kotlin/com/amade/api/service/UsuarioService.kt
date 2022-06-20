@@ -62,10 +62,11 @@ class UsuarioService(
     suspend fun loginByEmail(email: String, senha: String): UsuarioDTO? {
         val us = usuarioRepository.findUsuarioByEmail(email = email)
             ?: throw ApiException("O Email {$email} introduzido nao existe!")
-        if (decode(us.senha, senha)) {
-            return UsuarioDTO(uid = us.uid, email = us.email, username = us.name, isEnable = us.enable, us.imageUrl)
+        return if (decode(us.senha, senha)) {
+            UsuarioDTO(uid = us.uid, email = us.email, username = us.name, isEnable = us.enable, us.imageUrl)
+        }else{
+            null
         }
-        return null
     }
 
     private fun encode(senha: String): String {

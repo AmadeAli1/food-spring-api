@@ -47,7 +47,7 @@ interface ProdutoRepository : CoroutineCrudRepository<Produto, Int> {
     @Query("SELECT produto.* FROM produto inner join usuario_produto on produto.id = usuario_produto.produto_id and usuario_produto.usuario_id=:userId")
     fun obter_todos_items_da_lista_de_desejos_do_usuario(userId: String): Flow<Produto>
 
-    @Query("select * from produto where upper(produto.nome) like upper(concat($1,'%'))")
+    @Query("select * from produto where upper(produto.nome) like upper(concat($1,'%')) order by nome")
     fun pesquisar(query: String): Flow<Produto>
 
     @Query("select exists(select * from usuario_produto where usuario_id=$1 and produto_id=$2)")
@@ -56,4 +56,20 @@ interface ProdutoRepository : CoroutineCrudRepository<Produto, Int> {
     @Query("select exists(select * from usuario_cart where usuario_id=$1 and produto_id=$2)")
     suspend fun verificar_existencia_do_produto_no_carrinho_de_compras(userId: String, itemId: Int): Boolean
 
+
+//    @Modifying
+//    @Query("DELETE from usuarioitemlike where userid=$1 and itemid=$2")
+//    suspend fun remover_like_do_usuario(userId: String, itemId: Int): Int
+//
+//
+//    @Modifying
+//    @Query("update item set likes=likes+1 where id=$1")
+//    suspend fun adicionar_like_ao_item(itemId: Int): Int
+//
+//    @Modifying
+//    @Query("update item set likes=likes-1 where id=$1")
+//    suspend fun remover_like_do_item(itemId: Int): Int
+//
+//    @Query("select exists(select * from usuarioitemlike where userid=$1 and itemid=$2)")
+//    suspend fun verificar_existencia_de_like_do_usuario(userId: String, itemId: Int): Boolean
 }
