@@ -20,6 +20,7 @@ class SecurityWeb(
     fun springSecurityFilterChain(http: ServerHttpSecurity): SecurityWebFilterChain? {
         http
             .authorizeExchange()
+            .pathMatchers(HttpMethod.GET, "/ws/**").permitAll()
             .pathMatchers(HttpMethod.GET, "/api/**").permitAll()
             .pathMatchers(HttpMethod.GET, "/api/user/**").permitAll()
             .pathMatchers(HttpMethod.POST, "/api/**").permitAll()
