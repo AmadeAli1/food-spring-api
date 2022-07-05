@@ -1,7 +1,6 @@
 package com.amade.api.configurations
 
 import com.amade.api.websocket.ProdutoWebSocketHandler
-import com.amade.api.websocket.UsuarioWebSocketHandler
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.web.reactive.handler.SimpleUrlHandlerMapping
