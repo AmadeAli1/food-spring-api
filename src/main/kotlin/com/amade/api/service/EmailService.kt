@@ -21,7 +21,7 @@ class EmailService(private val javaMailSender: JavaMailSender) {
             sampleEmail.setText(body!!)
             javaMailSender.send(sampleEmail)
         } catch (e: Exception) {
-            throw ApiException("Ocorreu um Erro ao enviar o email para $sendToEmail cause:{${e.message}}")
+            throw ApiException("An error occurred while sending the email to $sendToEmail")
         }
     }
 

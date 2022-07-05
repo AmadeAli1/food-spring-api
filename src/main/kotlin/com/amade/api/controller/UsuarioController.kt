@@ -12,7 +12,6 @@ import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.http.codec.multipart.FilePart
 import org.springframework.web.bind.annotation.*
-import reactor.core.publisher.Sinks
 import javax.validation.Valid
 
 @RestController
@@ -21,7 +20,6 @@ class UsuarioController private constructor(
     private val usuarioService: UsuarioService,
     private val tokenService: TokenService,
     private val imageService: ImageService,
-    private val sinks: Sinks.Many<UsuarioDTO>
 ) {
     @GetMapping("/login")
     suspend fun login(
@@ -30,11 +28,9 @@ class UsuarioController private constructor(
     ): ResponseEntity<Any> {
         val usuario = usuarioService.loginByEmail(email, senha)
         if (usuario != null) {
-            sinks.emitNext(usuario, Sinks.EmitFailureHandler.FAIL_FAST)
             return ResponseEntity(usuario, HttpStatus.OK)
         }
-
-        return ResponseEntity("Verifique o dados introduzidos", HttpStatus.BAD_REQUEST)
+        return ResponseEntity("Check the data entered", HttpStatus.BAD_REQUEST)
 
     }
 
@@ -44,7 +40,7 @@ class UsuarioController private constructor(
         if (register != null) {
             return ResponseEntity(register, HttpStatus.CREATED)
         }
-        return ResponseEntity("Dados invalidos para o cadastro da conta!", HttpStatus.BAD_REQUEST)
+        return ResponseEntity("Invalid data for account registration", HttpStatus.BAD_REQUEST)
     }
 
     @GetMapping("/confirm")
@@ -55,7 +51,7 @@ class UsuarioController private constructor(
                 return@withContext ResponseEntity(confirmAccount, HttpStatus.OK)
             }
             return@withContext ResponseEntity(
-                "Ocorreu um erro ao confirmar o Token",
+                "An error occurred while confirming the Token",
                 HttpStatus.NOT_ACCEPTABLE
             )
         }

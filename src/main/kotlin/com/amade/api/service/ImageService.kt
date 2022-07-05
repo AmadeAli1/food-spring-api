@@ -43,7 +43,7 @@ class ImageService(
                 )
                 return@withContext imageUrl + "${imageRepository.save(image).id}"
             } catch (e: Exception) {
-                throw ApiException("Ocorreu um erro ao gravar a imagem! =>:{${e.message!!}}")
+                throw ApiException("An error occurred while recording an image! =>:{${e.message!!}}")
             }
         }
 

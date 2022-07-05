@@ -28,7 +28,7 @@ class UsuarioService(
     suspend fun register(usuario: Usuario): UsuarioDTO? = withContext(Dispatchers.IO) {
         val exists = usuarioRepository.existsByEmail(email = usuario.email)
         if (exists) {
-            throw ApiException("Este email:{${usuario.email} ja esta em uso!}")
+            throw ApiException("This email already exists")
         }
         val senha = encode(usuario.senha)
         val status: Int
@@ -37,7 +37,7 @@ class UsuarioService(
                 usuario.uid, usuario.name, senha, usuario.email, usuario.role.name
             )
         } catch (e: Exception) {
-            throw ApiException("Ocorreu um erro ao gravar o cliente! cause{${e.message}}")
+            throw ApiException("Invalid data")
         }
         return@withContext if (status == 1) {
             val us = findById(usuario.uid)!!
@@ -52,16 +52,20 @@ class UsuarioService(
         val token = tokenService.createToken(usuarioId = us.uid)
         emailService.sendEmail(
             sendToEmail = us.email, subject = "Food Market", body = """
-                    Ola ${us.name} obrigado por ciar uma conta na Food Market
-                    Para confirmar a sua conta: ${confirmTokenUrl}?token=${token!!}
-                    Token Valido para 40 minutos
+                    Hi ${us.name} thank you for your account at Food Market
+                    To confirm your account: ${confirmTokenUrl}?token=${token!!}
+                    Valid Token for 40 minutes
                 """.trimIndent()
         )
     }
 
     suspend fun loginByEmail(email: String, senha: String): UsuarioDTO? {
         val us = usuarioRepository.findUsuarioByEmail(email = email)
-            ?: throw ApiException("O Email {$email} introduzido nao existe!")
+            ?: throw ApiException("Account not found")
+
+        if (!decode(us.senha, senha)){
+            throw ApiException("Invalid password")
+        }
         return if (decode(us.senha, senha)) {
             UsuarioDTO(uid = us.uid, email = us.email, username = us.name, isEnable = us.enable, us.imageUrl)
         }else{
@@ -98,7 +102,7 @@ class UsuarioService(
                     usuario.uid, usuario.email, usuario.name, usuario.enable, usuario.imageUrl
                 )
             }
-            throw ApiException("Ocorreu um erro ao Mudar a photo do perfil")
+            throw ApiException("An error occurred when changing the profile photo")
         }
     }
 
@@ -113,7 +117,7 @@ class UsuarioService(
             if (statusDelete == 1 && statusUpdate == 1) {
                 return@withContext UsuarioDTO(usuario.uid, usuario.email, usuario.name, usuario.enable, null)
             }
-            throw ApiException("Ocorreu um erro ao remover a imagem do perfil")
+            throw ApiException("An error occurred while removing the profile picture")
         }
         return@withContext null
     }

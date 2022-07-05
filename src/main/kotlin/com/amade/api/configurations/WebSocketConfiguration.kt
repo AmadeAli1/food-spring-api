@@ -11,14 +11,12 @@ import org.springframework.web.reactive.socket.server.support.WebSocketHandlerAd
 @Configuration
 class WebSocketConfiguration(
     private val produtoWebSocketHandler: ProdutoWebSocketHandler,
-    private val usuarioWebSocketHandler: UsuarioWebSocketHandler,
 ) {
 
     @Bean
     fun handlerMapping(): SimpleUrlHandlerMapping {
         val map = mutableMapOf<String, WebSocketHandler>()
         map["/ws/new/produto"] = produtoWebSocketHandler
-        map["/ws/new/user"] = usuarioWebSocketHandler
         return SimpleUrlHandlerMapping(map, 1)
     }
 

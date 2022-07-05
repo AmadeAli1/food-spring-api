@@ -25,7 +25,7 @@ class TokenService(
             }
             return@withContext null
         } catch (e: Exception) {
-            throw ApiException("Ocorreu um erro ao Criar o token! cause{${e.message}}")
+            throw ApiException("An error occurred while creating the token!")
         }
     }
 
@@ -38,12 +38,12 @@ class TokenService(
         val status: Int
 
         if (token.confirmedAt != null) {
-            throw ApiException("O Token ja foi confirmado!")
+            throw ApiException("The Token has already been confirmed!")
         }
 
         val now = LocalDateTime.now()
         if (token.expiredAt.isBefore(now)) {
-            throw ApiException("O Token expirou!")
+            throw ApiException("The Token has expired!")
         }
         if (token.expiredAt.isAfter(now)) {
             status = tokenRepository.confirmToken(usuario_id = token.usuarioId)
@@ -52,13 +52,13 @@ class TokenService(
                 try {
                     val enableAccount = tokenRepository.enableAccount(token.usuarioId)
                     if (enableAccount == 1) {
-                        return "Confirmacao da conta com sucesso!"
+                        return "Successful account confirmation!"
                     }
                 } catch (e: Exception) {
-                    throw ApiException("Ocorreu um erro ao habilitar a conta! cause{${e.message}}")
+                    throw ApiException("An error occurred while enabling the account!")
                 }
             }
         }
-        throw ApiException("Nao foi possivel verificar o token!")
+        throw ApiException("It was not possible to verify the token!")
     }
 }

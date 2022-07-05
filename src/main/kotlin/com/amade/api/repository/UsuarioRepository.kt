@@ -20,7 +20,6 @@ interface UsuarioRepository : CoroutineCrudRepository<Usuario, String> {
     @Query("select * from usuario where email=:email")
     suspend fun findUsuarioByEmail(email: String): Usuario?
 
-
     @Query("select * from usuario where email=:email")
     fun getByEmail(email: String): Mono<UserDetails>
 
@@ -28,8 +27,11 @@ interface UsuarioRepository : CoroutineCrudRepository<Usuario, String> {
     @Query("update usuario set imageurl=:profileUrl  where uid=:usuarioId")
     suspend fun addProfilePicture(usuarioId: String, profileUrl: String?): Int
 
-
     @Query("select exists(select * from usuario where email=:email)")
     suspend fun existsByEmail(email: String): Boolean
+
+    @Modifying
+    @Query("update usuario set senha where email=$1 and senha=:$2")
+    suspend fun changePassword(email:String,novasenha: String):Int
 
 }

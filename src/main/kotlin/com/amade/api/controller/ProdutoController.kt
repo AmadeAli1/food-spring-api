@@ -72,7 +72,7 @@ class ProdutoController(
             if (status == 0) {
                 return@withContext ResponseEntity(
                     Message(
-                        message = "O Item ja existe na sua lista de desejos", status = HttpStatus
+                        message = "The Item already exists on your wish list", status = HttpStatus
                             .BAD_REQUEST.name
                     ),
                     HttpStatus
@@ -82,7 +82,7 @@ class ProdutoController(
             if (status == 1) {
                 return@withContext ResponseEntity(
                     Message(
-                        message = "Item adicionado na lista de desejos",
+                        message = "Item added to wishlist",
                         status = HttpStatus.CREATED.name
                     ),
                     HttpStatus
@@ -91,7 +91,7 @@ class ProdutoController(
             }
             ResponseEntity(
                 Message(
-                    message = "Erro ao adicionar o item na lista de desejos",
+                    message = "Error adding the item to the wishlist",
                     status = HttpStatus.NOT_ACCEPTABLE.name
                 ),
                 HttpStatus
@@ -111,18 +111,18 @@ class ProdutoController(
             if (status == 0) {
                 return@withContext ResponseEntity(
                     Message(
-                        message = "Item nao encontrado na lista de desejos",
+                        message = "Item not found on wishlist",
                         HttpStatus.BAD_REQUEST.name
                     ), HttpStatus.BAD_REQUEST
                 )
             }
             if (status == 1) {
-                return@withContext ResponseEntity(Message(message = "Item removido na lista de desejos"), HttpStatus.OK)
+                return@withContext ResponseEntity(Message(message = "Item removed from wishlist"), HttpStatus.OK)
             }
 
             ResponseEntity(
                 Message(
-                    message = "Erro ao adicionar ao remover o item na lista de desejos",
+                    message = "Error adding when removing the item from the wishlist",
                     status = HttpStatus.NOT_FOUND.name
                 ),
                 HttpStatus
@@ -150,21 +150,24 @@ class ProdutoController(
 
             if (status == 0) {
                 return@withContext ResponseEntity(
-                    Message(message = "O Item ja existe no seu shopping cart", status = HttpStatus.BAD_REQUEST.name),
+                    Message(
+                        message = "The Item already exists in your shopping cart",
+                        status = HttpStatus.BAD_REQUEST.name
+                    ),
                     HttpStatus.BAD_REQUEST
                 )
             }
 
             if (status == 1) {
                 return@withContext ResponseEntity(
-                    Message(message = "Item adicionado no shopping cart", status = HttpStatus.CREATED.name),
+                    Message(message = "Item added in shopping cart", status = HttpStatus.CREATED.name),
                     HttpStatus.CREATED
                 )
             }
 
             ResponseEntity(
                 Message(
-                    message = "Erro ao adicionar ao adicionar o item no shopping cart",
+                    message = "Error adding when adding the item in the shopping cart",
                     status = HttpStatus.NOT_FOUND.name
                 ),
                 HttpStatus
@@ -184,19 +187,19 @@ class ProdutoController(
             if (status == 0) {
                 return@withContext ResponseEntity(
                     Message(
-                        message = "O Item nao existe",
+                        message = "The Item does not exist",
                         status = HttpStatus.NOT_FOUND.name
                     ),
                     HttpStatus.NOT_FOUND
                 )
             }
             if (status == 1) {
-                return@withContext ResponseEntity(Message(message = "Item removido do shopping cart"), HttpStatus.OK)
+                return@withContext ResponseEntity(Message(message = "Item removed from shopping cart"), HttpStatus.OK)
             }
 
             ResponseEntity(
                 Message(
-                    message = "Erro ao remover o item do shopping cart",
+                    message = "Error removing the item from the shopping cart",
                     status = HttpStatus.NOT_FOUND.name
                 ),
                 HttpStatus

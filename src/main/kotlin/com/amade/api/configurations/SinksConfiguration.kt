@@ -17,12 +17,6 @@ class SinksConfiguration {
     }
 
     @Bean
-    fun sink_user(): Sinks.Many<UsuarioDTO> {
-        return Sinks.many().multicast().directBestEffort()
-    }
-
-
-    @Bean
     fun mapper(): ObjectMapper {
         return JsonMapper()
     }
